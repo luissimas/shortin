@@ -45,3 +45,27 @@ dependencies {
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()
 }
+
+val integrationTest by sourceSets.creating {
+    java.srcDir("src/integrationTest/kotlin")
+    resources.srcDir("src/integrationTest/resources")
+
+    compileClasspath += sourceSets["main"].output + configurations["testCompileClasspath"]
+    runtimeClasspath += output + compileClasspath
+}
+
+configurations["integrationTestImplementation"].extendsFrom(configurations["testImplementation"])
+configurations["integrationTestRuntimeOnly"].extendsFrom(configurations["testRuntimeOnly"])
+
+tasks.register<Test>("integrationTest") {
+    description = "Runs the integration tests."
+    group = "verification"
+
+    testClassesDirs = integrationTest.output.classesDirs
+    classpath = integrationTest.runtimeClasspath
+
+    shouldRunAfter("test")
+    useJUnitPlatform()
+}
+
+tasks.named("check") { dependsOn("integrationTest") }
