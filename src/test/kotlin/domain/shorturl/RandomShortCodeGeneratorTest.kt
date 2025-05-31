@@ -1,37 +1,31 @@
 package io.github.luissimas.domain.shorturl
 
 import io.github.luissimas.infrastructure.RandomShortCodeGenerator
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.property.Arb
+import io.kotest.property.arbitrary.positiveInt
+import io.kotest.property.forAll
 import java.net.URLEncoder
 import java.nio.charset.Charset
-import java.security.SecureRandom
-import kotlin.test.Test
-import kotlin.test.assertEquals
 
-class RandomShortCodeGeneratorTest {
-    private val generator = RandomShortCodeGenerator()
+class RandomShortCodeGeneratorTest : FunSpec({
+    val generator = RandomShortCodeGenerator()
 
-    @Test
-    fun `Created short code is URL safe`() {
-        // TODO: use a property-based testing framework
-        repeat(10_000) {
+    test("Created short code is URL safe") {
+        forAll { _: Int ->
             val shortCode = generator.generate()
             val encoded = URLEncoder.encode(shortCode, Charset.defaultCharset())
 
-            assertEquals(shortCode, encoded)
+            shortCode == encoded
         }
     }
 
-    @Test
-    fun `Created short code has the specified length`() {
-        val random = SecureRandom()
-
-        // TODO: use a property-based testing framework
-        repeat(10_000) {
-            val codeLength = random.nextInt(1000)
+    test("Created short code has the specified length") {
+        forAll(Arb.positiveInt(100)) { codeLength: Int ->
             val generator = RandomShortCodeGenerator(codeLength)
             val shortCode = generator.generate()
 
-            assertEquals(shortCode.length, codeLength)
+            shortCode.length == codeLength
         }
     }
-}
+})

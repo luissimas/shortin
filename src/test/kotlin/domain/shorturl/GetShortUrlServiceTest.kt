@@ -1,13 +1,11 @@
 package io.github.luissimas.domain.shorturl
 
 import io.github.luissimas.infrastructure.InMemoryShortUrlRepository
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNull
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.shouldBe
 
-class GetShortUrlServiceTest {
-    @Test
-    fun `Returns the found short URL`() {
+class GetShortUrlServiceTest : FunSpec({
+    test("Returns the found short URL") {
         val repository = InMemoryShortUrlRepository()
         val service = GetShortUrlService(repository)
 
@@ -15,16 +13,15 @@ class GetShortUrlServiceTest {
         repository.save(shortUrl)
         val result = service.getShortUrl(shortUrl.shortCode)
 
-        assertEquals(result, shortUrl)
+        result shouldBe shortUrl
     }
 
-    @Test
-    fun `Returns null if the short URL is not found`() {
+    test("Returns null if the short URL is not found") {
         val repository = InMemoryShortUrlRepository()
         val service = GetShortUrlService(repository)
 
         val result = service.getShortUrl("any-short-code")
 
-        assertNull(result)
+        result shouldBe null
     }
-}
+})
