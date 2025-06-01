@@ -7,6 +7,8 @@ logback-version = "1.4.14"
 prometheus-version = "1.6.13"
 kotest-version = "5.7.2"
 kotest-assertions-ktor-version = "2.0.0"
+kotlin-logging-version = "7.0.3"
+logstash-logback-encoder-version = "8.1"
 
 [libraries]
 ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor-version" }
@@ -33,6 +35,8 @@ kotest-runner-junit = { module = "io.kotest:kotest-runner-junit5", version.ref =
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest-version" }
 kotest-property = { module = "io.kotest:kotest-property", version.ref = "kotest-version" }
 kotest-assertions-ktor = { module = "io.kotest.extensions:kotest-assertions-ktor", version.ref = "kotest-assertions-ktor-version" }
+kotlin-logging = { module = "io.github.oshai:kotlin-logging-jvm", version.ref = "kotlin-logging-version" }
+logstash-logback-encoder = { module = "net.logstash.logback:logstash-logback-encoder", version.ref = "logstash-logback-encoder-version" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin-version" }
