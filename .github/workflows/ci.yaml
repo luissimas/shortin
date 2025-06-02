@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Cache Gradle
+        uses: gradle/gradle-build-action@v3
+
+      - name: Lint & Static Analysis
+        run: ./gradlew ktlintCheck detekt --no-daemon
+
+      - name: Unit Tests
+        run: ./gradlew test --no-daemon
+
+      - name: Integration Tests
+        run: ./gradlew integrationTest --no-daemon
