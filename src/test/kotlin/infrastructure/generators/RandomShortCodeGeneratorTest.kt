@@ -1,6 +1,6 @@
 package infrastructure.generators
 
-import io.github.luissimas.infrastructure.generators.RandomShortCodeGenerator
+import io.github.luissimas.infrastructure.adapters.driven.generators.RandomShortCodeGenerator
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.positiveInt

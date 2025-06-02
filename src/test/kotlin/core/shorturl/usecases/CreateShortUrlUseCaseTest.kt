@@ -2,8 +2,8 @@ package core.shorturl.usecases
 
 import io.github.luissimas.core.shorturl.domain.ShortUrl
 import io.github.luissimas.core.shorturl.usecases.CreateShortUrlUseCase
-import io.github.luissimas.infrastructure.generators.SequenceShortCodeGenerator
-import io.github.luissimas.infrastructure.persistence.InMemoryShortUrlRepository
+import io.github.luissimas.infrastructure.adapters.driven.generators.SequenceShortCodeGenerator
+import io.github.luissimas.infrastructure.adapters.driven.persistence.InMemoryShortUrlRepository
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.equals.shouldBeEqual
@@ -17,7 +17,7 @@ class CreateShortUrlUseCaseTest :
             val useCase = CreateShortUrlUseCase(repository = repository, shortCodeGenerator = shortCodeGenerator)
 
             val longUrl = "any-long-url"
-            val shortUrl = useCase.createShortUrl(longUrl)
+            val shortUrl = useCase(longUrl)
             val storedShortUrl = repository.getByShortCode(shortUrl.shortCode)
 
             shortUrl shouldBe ShortUrl(shortCode = "any-code", longUrl = longUrl)
@@ -32,7 +32,7 @@ class CreateShortUrlUseCaseTest :
             repository.save(ShortUrl(shortCode = "any-code", longUrl = "any-url"))
 
             val longUrl = "any-long-url"
-            val shortUrl = useCase.createShortUrl(longUrl)
+            val shortUrl = useCase(longUrl)
             val storedShortUrl = repository.getByShortCode(shortUrl.shortCode)
 
             shortUrl shouldBeEqual ShortUrl(shortCode = "another-code", longUrl = longUrl)
@@ -47,7 +47,7 @@ class CreateShortUrlUseCaseTest :
             repository.save(ShortUrl(shortCode = "any-code", longUrl = "any-url"))
 
             shouldThrow<IllegalStateException> {
-                useCase.createShortUrl("any-long-url")
+                useCase("any-long-url")
             }
         }
     })

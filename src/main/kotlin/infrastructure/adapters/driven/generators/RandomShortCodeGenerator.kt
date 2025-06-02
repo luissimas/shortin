@@ -1,4 +1,4 @@
-package io.github.luissimas.infrastructure.generators
+package io.github.luissimas.infrastructure.adapters.driven.generators
 
 import io.github.luissimas.core.shorturl.ports.driven.ShortCodeGenerator
 import java.security.SecureRandom

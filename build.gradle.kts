@@ -10,7 +10,7 @@ group = "io.github.luissimas"
 version = "0.0.1"
 
 application {
-    mainClass = "io.github.luissimas.ApplicationKt"
+    mainClass = "io.github.luissimas.KtorApplicationKt"
 }
 
 repositories {
@@ -44,6 +44,7 @@ dependencies {
     testImplementation(libs.kotest.assertions.core)
     testImplementation(libs.kotest.property)
     testImplementation(libs.kotest.assertions.ktor)
+    testImplementation(libs.ktor.client.content.negotiation)
 }
 
 tasks.withType<Test>().configureEach {
