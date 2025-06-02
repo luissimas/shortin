@@ -30,7 +30,7 @@ fun Application.configureMonitoring() {
         callIdMdc("call-id")
     }
     routing {
-        get("/metrics-micrometer") {
+        get("/metrics") {
             call.respond(appMicrometerRegistry.scrape())
         }
     }

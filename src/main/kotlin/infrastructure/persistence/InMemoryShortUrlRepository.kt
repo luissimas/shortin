@@ -1,7 +1,7 @@
-package io.github.luissimas.infrastructure
+package io.github.luissimas.infrastructure.persistence
 
-import io.github.luissimas.domain.shorturl.ShortUrl
-import io.github.luissimas.domain.shorturl.ShortUrlRepository
+import io.github.luissimas.core.shorturl.domain.ShortUrl
+import io.github.luissimas.core.shorturl.ports.driven.ShortUrlRepository
 
 class InMemoryShortUrlRepository : ShortUrlRepository {
     private val urls: HashMap<String, ShortUrl> = hashMapOf()
