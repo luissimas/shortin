@@ -7,5 +7,5 @@ import io.github.luissimas.core.shorturl.ports.driver.GetShortUrlService
 class GetShortUrlUseCase(
     private val repository: ShortUrlRepository,
 ) : GetShortUrlService {
-    override fun getShortUrl(shortCode: String): ShortUrl? = repository.getByShortCode(shortCode)
+    override fun invoke(shortCode: String): ShortUrl? = repository.getByShortCode(shortCode)
 }

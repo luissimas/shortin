@@ -1,4 +1,4 @@
-package io.github.luissimas.infrastructure.persistence
+package io.github.luissimas.infrastructure.adapters.driven.persistence
 
 import io.github.luissimas.core.shorturl.domain.ShortUrl
 import io.github.luissimas.core.shorturl.ports.driven.ShortUrlRepository
@@ -10,5 +10,5 @@ class InMemoryShortUrlRepository : ShortUrlRepository {
         urls[url.shortCode] = url
     }
 
-    override fun getByShortCode(shortCode: String): ShortUrl? = urls.get(shortCode)
+    override fun getByShortCode(shortCode: String): ShortUrl? = urls[shortCode]
 }
