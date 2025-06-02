@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.ktor)
     alias(libs.plugins.kotlin.plugin.serialization)
     alias(libs.plugins.ktlint)
+    alias(libs.plugins.detekt)
 }
 
 group = "io.github.luissimas"

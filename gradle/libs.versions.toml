@@ -10,6 +10,7 @@ kotest-assertions-ktor-version = "2.0.0"
 kotlin-logging-version = "7.0.3"
 logstash-logback-encoder-version = "8.1"
 ktlint-version = "12.3.0"
+detekt-version = "1.23.8"
 
 [libraries]
 ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor-version" }
@@ -44,3 +45,4 @@ kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin-version" }
 ktor = { id = "io.ktor.plugin", version.ref = "ktor-version" }
 kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin-version" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint-version" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt-version"}
