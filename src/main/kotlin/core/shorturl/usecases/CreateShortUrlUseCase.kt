@@ -1,14 +1,18 @@
-package io.github.luissimas.domain.shorturl
+package io.github.luissimas.core.shorturl.usecases
 
+import io.github.luissimas.core.shorturl.domain.ShortUrl
+import io.github.luissimas.core.shorturl.ports.driven.ShortCodeGenerator
+import io.github.luissimas.core.shorturl.ports.driven.ShortUrlRepository
+import io.github.luissimas.core.shorturl.ports.driver.ShortUrlService
 import io.github.oshai.kotlinlogging.KotlinLogging
 
 val logger = KotlinLogging.logger { }
 
-class CreateShortUrlService(
+class CreateShortUrlUseCase(
     private val repository: ShortUrlRepository,
     private val shortCodeGenerator: ShortCodeGenerator,
     private val maxAttempts: Int = 5,
-) : CreateShortUrlUsecase {
+) : ShortUrlService {
     override fun createShortUrl(longUrl: String): ShortUrl {
         logger.atDebug {
             message = "Creating short URL"
@@ -37,6 +41,6 @@ class CreateShortUrlService(
             }
         }
 
-        throw IllegalStateException("Unable to generate unique short code after $maxAttempts attempts")
+        error("Unable to generate unique short code after $maxAttempts attempts")
     }
 }

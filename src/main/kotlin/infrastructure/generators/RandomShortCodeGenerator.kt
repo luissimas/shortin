@@ -1,6 +1,6 @@
-package io.github.luissimas.infrastructure
+package io.github.luissimas.infrastructure.generators
 
-import io.github.luissimas.domain.shorturl.ShortCodeGenerator
+import io.github.luissimas.core.shorturl.ports.driven.ShortCodeGenerator
 import java.security.SecureRandom
 
 /**
@@ -9,7 +9,9 @@ import java.security.SecureRandom
  * Short codes are randomly generated and Base62 encoded to ensure
  * they are safe to use in URLs.
  */
-class RandomShortCodeGenerator(private val codeLength: Int = 8) : ShortCodeGenerator {
+class RandomShortCodeGenerator(
+    private val codeLength: Int = 8,
+) : ShortCodeGenerator {
     private val random = SecureRandom()
     private val alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 
