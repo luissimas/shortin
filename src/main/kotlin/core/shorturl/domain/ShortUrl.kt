@@ -1,9 +1,9 @@
 package io.github.luissimas.core.shorturl.domain
 
 /**
- * `ShortUrl` associates a `shortCode` to a `longUrl`.
+ * A domain short URL.
  */
 data class ShortUrl(
-    val shortCode: String,
-    val longUrl: String,
+    val shortCode: ShortCode,
+    val longUrl: Url,
 )

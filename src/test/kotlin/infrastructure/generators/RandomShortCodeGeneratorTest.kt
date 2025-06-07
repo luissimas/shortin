@@ -14,7 +14,7 @@ class RandomShortCodeGeneratorTest :
 
         test("Created short code is URL safe") {
             forAll { _: Int ->
-                val shortCode = generator.generate()
+                val shortCode = generator.generate().code
                 val encoded = URLEncoder.encode(shortCode, Charset.defaultCharset())
 
                 shortCode == encoded
@@ -24,7 +24,7 @@ class RandomShortCodeGeneratorTest :
         test("Created short code has the specified length") {
             forAll(Arb.Companion.positiveInt(100)) { codeLength: Int ->
                 val generator = RandomShortCodeGenerator(codeLength)
-                val shortCode = generator.generate()
+                val shortCode = generator.generate().code
 
                 shortCode.length == codeLength
             }
