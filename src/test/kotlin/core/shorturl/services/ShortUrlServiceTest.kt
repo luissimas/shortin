@@ -1,15 +1,15 @@
 package core.shorturl.services
 
+import io.github.luissimas.core.shorturl.domain.ApplicationError
 import io.github.luissimas.core.shorturl.domain.ShortCode
 import io.github.luissimas.core.shorturl.domain.ShortUrl
 import io.github.luissimas.core.shorturl.domain.Url
 import io.github.luissimas.core.shorturl.services.ShortUrlService
 import io.github.luissimas.infrastructure.generators.SequenceShortCodeGenerator
 import io.github.luissimas.infrastructure.persistence.InMemoryShortUrlRepository
+import io.kotest.assertions.arrow.core.shouldBeLeft
 import io.kotest.assertions.arrow.core.shouldBeRight
-import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
-import io.kotest.matchers.equals.shouldBeEqual
 import io.kotest.matchers.shouldBe
 
 class ShortUrlServiceTest :
@@ -22,8 +22,8 @@ class ShortUrlServiceTest :
                 val service = ShortUrlService(repository = repository, shortCodeGenerator = shortCodeGenerator)
 
                 val longUrl = Url.create("https://any-long-url").shouldBeRight()
-                val shortUrl = service.createShortUrl(longUrl)
-                val storedShortUrl = repository.getByShortCode(shortUrl.shortCode)
+                val shortUrl = service.createShortUrl(longUrl).shouldBeRight()
+                val storedShortUrl = repository.getByShortCode(shortUrl.shortCode).shouldBeRight()
 
                 shortUrl shouldBe ShortUrl(shortCode = shortCode, longUrl = longUrl)
                 storedShortUrl shouldBe shortUrl
@@ -43,11 +43,11 @@ class ShortUrlServiceTest :
                 repository.save(ShortUrl(shortCode = existingShortCode, longUrl = existingLongUrl))
 
                 val longUrl = Url.create("http://any-long-url").shouldBeRight()
-                val shortUrl = service.createShortUrl(longUrl)
-                val storedShortUrl = repository.getByShortCode(shortUrl.shortCode)
+                val shortUrl = service.createShortUrl(longUrl).shouldBeRight()
+                val storedShortUrl = repository.getByShortCode(shortUrl.shortCode).shouldBeRight()
 
-                shortUrl shouldBeEqual ShortUrl(shortCode = availableShortCode, longUrl = longUrl)
                 storedShortUrl shouldBe shortUrl
+                shortUrl shouldBe ShortUrl(shortCode = availableShortCode, longUrl = longUrl)
             }
 
             it("Should fail after max attempts is reached") {
@@ -59,9 +59,9 @@ class ShortUrlServiceTest :
 
                 repository.save(ShortUrl(shortCode = existingShortCode, longUrl = longUrl))
 
-                shouldThrow<IllegalStateException> {
-                    service.createShortUrl(longUrl)
-                }
+                val result = service.createShortUrl(longUrl)
+
+                result shouldBeLeft ApplicationError.MaxAttemptsReached
             }
         }
 
@@ -77,7 +77,7 @@ class ShortUrlServiceTest :
                 repository.save(shortUrl)
                 val result = service.getShortUrl(shortCode)
 
-                result shouldBe shortUrl
+                result shouldBeRight shortUrl
             }
 
             it("Returns null if the short URL is not found") {
@@ -88,7 +88,7 @@ class ShortUrlServiceTest :
 
                 val result = service.getShortUrl(shortCode)
 
-                result shouldBe null
+                result shouldBeLeft ApplicationError.EntityNotFound
             }
         }
     })
