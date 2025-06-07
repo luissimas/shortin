@@ -1,6 +1,8 @@
 package io.github.luissimas.infrastructure.adapters.driven.generators
 
-import io.github.luissimas.core.shorturl.ports.driven.ShortCodeGenerator
+import arrow.core.getOrElse
+import io.github.luissimas.core.shorturl.domain.ShortCode
+import io.github.luissimas.core.shorturl.ports.ShortCodeGenerator
 import java.security.SecureRandom
 
 /**
@@ -18,11 +20,16 @@ class RandomShortCodeGenerator(
     /**
      * Generate a new short code with the given `length`.
      */
-    override fun generate(): String =
-        buildString(codeLength) {
-            repeat(codeLength) {
-                val index = random.nextInt(alphabet.length)
-                append(alphabet[index])
+    override fun generate(): ShortCode {
+        val code =
+            buildString(codeLength) {
+                repeat(codeLength) {
+                    val index = random.nextInt(alphabet.length)
+                    append(alphabet[index])
+                }
             }
+        return ShortCode.create(code).getOrElse {
+            throw IllegalStateException("Generated invalid short code")
         }
+    }
 }

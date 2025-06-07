@@ -1,0 +1,4 @@
+### Create a new short URL
+POST https://localhost:8080/
+
+###

@@ -38,12 +38,14 @@ dependencies {
     implementation(libs.logback.classic)
     implementation(libs.kotlin.logging)
     implementation(libs.logstash.logback.encoder)
+    implementation(libs.arrow.core)
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.kotlin.test.junit)
     testImplementation(libs.kotest.runner.junit)
     testImplementation(libs.kotest.assertions.core)
     testImplementation(libs.kotest.property)
     testImplementation(libs.kotest.assertions.ktor)
+    testImplementation(libs.kotest.assertions.arrow)
     testImplementation(libs.ktor.client.content.negotiation)
 }
 

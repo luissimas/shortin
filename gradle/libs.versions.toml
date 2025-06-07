@@ -11,6 +11,8 @@ kotlin-logging-version = "7.0.3"
 logstash-logback-encoder-version = "8.1"
 ktlint-version = "12.3.0"
 detekt-version = "1.23.8"
+arrow-version = "2.1.2"
+kotest-assertions-arrow-version = "2.0.0"
 
 [libraries]
 ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor-version" }
@@ -39,6 +41,8 @@ kotest-property = { module = "io.kotest:kotest-property", version.ref = "kotest-
 kotest-assertions-ktor = { module = "io.kotest.extensions:kotest-assertions-ktor", version.ref = "kotest-assertions-ktor-version" }
 kotlin-logging = { module = "io.github.oshai:kotlin-logging-jvm", version.ref = "kotlin-logging-version" }
 logstash-logback-encoder = { module = "net.logstash.logback:logstash-logback-encoder", version.ref = "logstash-logback-encoder-version" }
+arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow-version" }
+kotest-assertions-arrow = { module = "io.kotest.extensions:kotest-assertions-arrow", version.ref = "kotest-assertions-arrow-version" }
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor-version" }
 
 [plugins]
