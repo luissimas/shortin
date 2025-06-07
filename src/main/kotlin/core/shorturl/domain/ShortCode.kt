@@ -20,8 +20,8 @@ value class ShortCode private constructor(
          */
         fun create(value: String?): Either<ValidationError, ShortCode> =
             either {
-                ensureNotNull(value) { ValidationError("no value provided") }
-                ensure(value.all { VALID_CHARS.contains(it) }) { ValidationError("invalid characters") }
+                ensureNotNull(value) { ValidationError.MissingValue }
+                ensure(value.all { VALID_CHARS.contains(it) }) { ValidationError.InvalidShortCode }
                 ShortCode(value)
             }
     }

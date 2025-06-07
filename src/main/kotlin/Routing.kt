@@ -1,9 +1,8 @@
 package io.github.luissimas
 
-import io.github.luissimas.core.shorturl.usecases.CreateShortUrlUseCase
-import io.github.luissimas.core.shorturl.usecases.GetShortUrlUseCase
-import io.github.luissimas.infrastructure.adapters.driven.generators.RandomShortCodeGenerator
-import io.github.luissimas.infrastructure.adapters.driven.persistence.InMemoryShortUrlRepository
+import io.github.luissimas.core.shorturl.services.ShortUrlService
+import io.github.luissimas.infrastructure.generators.RandomShortCodeGenerator
+import io.github.luissimas.infrastructure.persistence.InMemoryShortUrlRepository
 import io.github.luissimas.presentation.rest.shortUrl
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.http.HttpStatusCode
@@ -47,10 +46,9 @@ fun Application.configureRouting() {
     }
 
     val shortUrlRepository = InMemoryShortUrlRepository()
-    val createShortUrlService = CreateShortUrlUseCase(shortUrlRepository, RandomShortCodeGenerator())
-    val getShortUrlService = GetShortUrlUseCase(shortUrlRepository)
+    val shortUrlService = ShortUrlService(shortUrlRepository, RandomShortCodeGenerator())
 
     routing {
-        shortUrl(createShortUrlService, getShortUrlService)
+        shortUrl(shortUrlService)
     }
 }

@@ -1,5 +1,9 @@
 package io.github.luissimas.core.shorturl.services
 
+import arrow.core.Either
+import arrow.core.raise.either
+import arrow.core.right
+import io.github.luissimas.core.shorturl.domain.ApplicationError
 import io.github.luissimas.core.shorturl.domain.ShortCode
 import io.github.luissimas.core.shorturl.domain.ShortUrl
 import io.github.luissimas.core.shorturl.domain.Url
@@ -14,36 +18,27 @@ class ShortUrlService(
     private val shortCodeGenerator: ShortCodeGenerator,
     private val maxAttempts: Int = 5,
 ) {
-    fun createShortUrl(longUrl: Url): ShortUrl {
-        logger.atDebug {
-            message = "Creating short URL"
-            payload = mapOf("longUrl" to longUrl)
-        }
-
-        repeat(maxAttempts) {
-            val shortCode = shortCodeGenerator.generate()
-            val existingShortUrl = repository.getByShortCode(shortCode)
-
-            if (existingShortUrl == null) {
+    fun createShortUrl(longUrl: Url): Either<ApplicationError, ShortUrl> =
+        either {
+            repeat(maxAttempts) {
+                val shortCode = shortCodeGenerator.generate().bind()
                 val shortUrl = ShortUrl(shortCode = shortCode, longUrl = longUrl)
-                repository.save(shortUrl)
+                val saveResult = repository.save(shortUrl)
 
-                logger.atDebug {
-                    message = "Created short URL"
-                    payload = mapOf("shortUrl" to shortUrl)
+                when (saveResult) {
+                    is Either.Right -> return shortUrl.right()
+                    is Either.Left -> {
+                        if (saveResult.value != ApplicationError.ShortCodeAlreadyExists) return saveResult
+                        logger.atWarn {
+                            message = "Generated short code already exists"
+                            payload = mapOf("attempt" to it, "maxAttempts" to maxAttempts, "shortCode" to shortCode)
+                        }
+                    }
                 }
-
-                return shortUrl
             }
 
-            logger.atWarn {
-                message = "Generated short code already exists"
-                payload = mapOf("attempt" to it, "maxAttempts" to maxAttempts, "shortCode" to shortCode)
-            }
+            raise(ApplicationError.MaxAttemptsReached)
         }
 
-        error("Unable to generate unique short code after $maxAttempts attempts")
-    }
-
-    fun getShortUrl(shortCode: ShortCode): ShortUrl? = repository.getByShortCode(shortCode)
+    fun getShortUrl(shortCode: ShortCode): Either<ApplicationError, ShortUrl> = repository.getByShortCode(shortCode)
 }

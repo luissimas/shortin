@@ -19,7 +19,7 @@ value class Url private constructor(
         fun create(value: String?): Either<ValidationError, Url> =
             runCatching { URL(value) }.fold(
                 { Url(it.toString()).right() },
-                { ValidationError(it.message ?: "unknown").left() },
+                { ValidationError.InvalidUrl.left() },
             )
     }
 }
