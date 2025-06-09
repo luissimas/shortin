@@ -1,0 +1,34 @@
+### Create short url
+POST http://localhost:8080/urls
+Content-Type: application/json
+
+{
+  "longUrl": "https://www.example.com"
+}
+
+### Create another short url
+POST http://localhost:8080/urls
+Content-Type: application/json
+
+{
+  "longUrl": "https://github.com/luissimas/shortin"
+}
+
+### Retrieve and redirect to long URL
+# Note: Replace {{shortCode}} with an actual short code obtained from a previous create request
+# or set it as an environment variable in your HTTP client
+GET http://localhost:8080/r/eevTdAqz
+
+### Retrieve with a specific short code (example)
+GET http://localhost:8080/r/abc123
+
+### Retrieve with invalid short code (should return 400 Bad Request)
+GET http://localhost:8080/r/invalid!code
+
+### Create with invalid URL (should return 400 Bad Request)
+POST http://localhost:8080/urls
+Content-Type: application/json
+
+{
+  "long_url": "not-a-valid-url"
+}
