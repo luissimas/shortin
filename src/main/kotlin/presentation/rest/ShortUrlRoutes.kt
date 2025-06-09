@@ -21,7 +21,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class CreateShortUrlRequest(
-    val longUrl: String,
+    val longUrl: String?,
 )
 
 @Serializable

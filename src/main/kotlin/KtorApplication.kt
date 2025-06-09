@@ -5,13 +5,16 @@ import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 
 fun main() {
-    embeddedServer(Netty, port = 8080, host = "0.0.0.0", module = Application::module)
-        .start(wait = true)
+    val config = Config.load()
+    embeddedServer(Netty, port = config.server.port, host = config.server.host, module = {
+        module(config)
+    }).start(wait = true)
 }
 
-fun Application.module() {
+fun Application.module(config: Config) {
     configureMonitoring()
     configureSerialization()
     configureHTTP()
-    configureRouting()
+    val database = configureDatabase(config.database)
+    configureRouting(database)
 }

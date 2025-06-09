@@ -18,8 +18,6 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.testing.testApplication
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonNamingStrategy
 
 @OptIn(ExperimentalSerializationApi::class)
 class ShortUrlRoutesTest :
@@ -30,7 +28,7 @@ class ShortUrlRoutesTest :
                 val client =
                     createClient {
                         install(ContentNegotiation) {
-                            json(Json { namingStrategy = JsonNamingStrategy.SnakeCase })
+                            json()
                         }
                         followRedirects = false
                     }

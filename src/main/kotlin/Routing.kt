@@ -2,7 +2,7 @@ package io.github.luissimas
 
 import io.github.luissimas.core.shorturl.services.ShortUrlService
 import io.github.luissimas.infrastructure.generators.RandomShortCodeGenerator
-import io.github.luissimas.infrastructure.persistence.InMemoryShortUrlRepository
+import io.github.luissimas.infrastructure.persistence.PostgresShortUrlRepository
 import io.github.luissimas.presentation.rest.shortUrl
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.http.HttpStatusCode
@@ -15,11 +15,12 @@ import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.routing
 import kotlinx.serialization.ExperimentalSerializationApi
+import org.jetbrains.exposed.sql.Database
 
 val logger = KotlinLogging.logger { }
 
 @OptIn(ExperimentalSerializationApi::class)
-fun Application.configureRouting() {
+fun Application.configureRouting(database: Database) {
     install(StatusPages) {
         exception<Throwable> { call, cause ->
             logger.atError {
@@ -45,7 +46,7 @@ fun Application.configureRouting() {
         }
     }
 
-    val shortUrlRepository = InMemoryShortUrlRepository()
+    val shortUrlRepository = PostgresShortUrlRepository(database)
     val shortUrlService = ShortUrlService(shortUrlRepository, RandomShortCodeGenerator())
 
     routing {

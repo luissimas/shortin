@@ -1,6 +1,7 @@
 [versions]
 exposed-version = "0.61.0"
 h2-version = "2.3.232"
+postgresql-version = "42.7.3"
 kotlin-version = "2.1.10"
 ktor-version = "3.1.3"
 logback-version = "1.4.14"
@@ -13,6 +14,7 @@ ktlint-version = "12.3.0"
 detekt-version = "1.23.8"
 arrow-version = "2.1.2"
 kotest-assertions-arrow-version = "2.0.0"
+hoplite-version = "2.9.0"
 
 [libraries]
 ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor-version" }
@@ -25,6 +27,7 @@ ktor-server-auth = { module = "io.ktor:ktor-server-auth", version.ref = "ktor-ve
 exposed-core = { module = "org.jetbrains.exposed:exposed-core", version.ref = "exposed-version" }
 exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed-version" }
 h2 = { module = "com.h2database:h2", version.ref = "h2-version" }
+postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql-version" }
 ktor-server-call-id = { module = "io.ktor:ktor-server-call-id", version.ref = "ktor-version" }
 ktor-server-host-common = { module = "io.ktor:ktor-server-host-common", version.ref = "ktor-version" }
 ktor-server-status-pages = { module = "io.ktor:ktor-server-status-pages", version.ref = "ktor-version" }
@@ -44,6 +47,7 @@ logstash-logback-encoder = { module = "net.logstash.logback:logstash-logback-enc
 arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow-version" }
 kotest-assertions-arrow = { module = "io.kotest.extensions:kotest-assertions-arrow", version.ref = "kotest-assertions-arrow-version" }
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor-version" }
+hoplite-core = { module = "com.sksamuel.hoplite:hoplite-core", version.ref = "hoplite-version" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin-version" }
