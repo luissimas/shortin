@@ -1,5 +1,8 @@
-package io.github.luissimas.infrastructure.adapters.driver.rest
+package presentation.rest
 
+import io.github.luissimas.Config
+import io.github.luissimas.Database
+import io.github.luissimas.Server
 import io.github.luissimas.module
 import io.github.luissimas.presentation.rest.CreateShortUrlRequest
 import io.github.luissimas.presentation.rest.CreateShortUrlResponse
@@ -18,13 +21,37 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.testing.testApplication
 import kotlinx.serialization.ExperimentalSerializationApi
+import org.testcontainers.containers.PostgreSQLContainer
 
 @OptIn(ExperimentalSerializationApi::class)
 class ShortUrlRoutesTest :
     FunSpec({
+        val postgresContainer =
+            PostgreSQLContainer<Nothing>("postgres:17-alpine").apply {
+                withDatabaseName("shortin")
+                withUsername("postgres")
+                withPassword("postgres")
+            }
+
+        beforeSpec {
+            postgresContainer.start()
+        }
+
+        afterSpec {
+            postgresContainer.stop()
+        }
+
         test("Should create short URL and redirect to it on query") {
             testApplication {
-                application { module() }
+                val database =
+                    Database(
+                        url = postgresContainer.jdbcUrl,
+                        user = postgresContainer.username,
+                        password = postgresContainer.password,
+                    )
+                val server = Server(host = "localhost", port = 8080)
+                val config = Config(database = database, server = server)
+                application { module(config) }
                 val client =
                     createClient {
                         install(ContentNegotiation) {
