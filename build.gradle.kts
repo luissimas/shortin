@@ -49,6 +49,8 @@ dependencies {
     testImplementation(libs.kotest.assertions.ktor)
     testImplementation(libs.kotest.assertions.arrow)
     testImplementation(libs.ktor.client.content.negotiation)
+    testImplementation(libs.testcontainers.core)
+    testImplementation(libs.testcontainers.postgresql)
 }
 
 tasks.withType<Test>().configureEach {

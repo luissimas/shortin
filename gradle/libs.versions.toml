@@ -15,6 +15,7 @@ detekt-version = "1.23.8"
 arrow-version = "2.1.2"
 kotest-assertions-arrow-version = "2.0.0"
 hoplite-version = "2.9.0"
+testcontainers-version = "1.19.7"
 
 [libraries]
 ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor-version" }
@@ -48,6 +49,8 @@ arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow-version" 
 kotest-assertions-arrow = { module = "io.kotest.extensions:kotest-assertions-arrow", version.ref = "kotest-assertions-arrow-version" }
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor-version" }
 hoplite-core = { module = "com.sksamuel.hoplite:hoplite-core", version.ref = "hoplite-version" }
+testcontainers-core = { module = "org.testcontainers:testcontainers", version.ref = "testcontainers-version" }
+testcontainers-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testcontainers-version" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin-version" }
