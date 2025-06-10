@@ -17,6 +17,8 @@ kotest-assertions-arrow-version = "2.0.0"
 hoplite-version = "2.9.0"
 testcontainers-version = "1.19.7"
 flyway-version = "11.9.1"
+sqldelight-version = "2.1.0"
+hikari-version = "6.3.0"
 
 [libraries]
 ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor-version" }
@@ -54,6 +56,9 @@ testcontainers-core = { module = "org.testcontainers:testcontainers", version.re
 testcontainers-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testcontainers-version" }
 flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway-version" }
 flyway-postgres = { module = "org.flywaydb:flyway-database-postgresql", version.ref = "flyway-version" }
+sqldelight-jdbc = { module = "app.cash.sqldelight:jdbc-driver", version.ref = "sqldelight-version" }
+sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight-version" }
+hikari = { module = "com.zaxxer:HikariCP", version.ref = "hikari-version" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin-version" }
@@ -62,3 +67,4 @@ kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization"
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint-version" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt-version"}
 flyway = { id = "org.flywaydb.flyway", version.ref = "flyway-version" }
+sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight-version" }

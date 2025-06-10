@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.ktlint)
     alias(libs.plugins.detekt)
     alias(libs.plugins.flyway)
+    alias(libs.plugins.sqldelight)
 }
 
 group = "io.github.luissimas"
@@ -42,7 +43,9 @@ dependencies {
     implementation(libs.logstash.logback.encoder)
     implementation(libs.arrow.core)
     implementation(libs.hoplite.core)
-    implementation(libs.flyway.core)
+    implementation(libs.sqldelight.jdbc)
+    implementation(libs.sqldelight.coroutines)
+    implementation(libs.hikari)
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.kotlin.test.junit)
     testImplementation(libs.kotest.runner.junit)
@@ -53,6 +56,8 @@ dependencies {
     testImplementation(libs.ktor.client.content.negotiation)
     testImplementation(libs.testcontainers.core)
     testImplementation(libs.testcontainers.postgresql)
+    testImplementation(libs.flyway.core)
+    testImplementation(libs.flyway.postgres)
 }
 
 tasks.withType<Test>().configureEach {
@@ -96,9 +101,23 @@ flyway {
     password = System.getenv("DATABASE__PASSWORD")
 }
 
-tasks.register<JavaExec>("generateMigrationScript") {
-    group = "application"
-    description = "Generate migration script in the path exposed-migration/migrations"
-    classpath = sourceSets.main.get().runtimeClasspath
-    mainClass = "GenerateMigrationScriptKt"
+sqldelight {
+    databases {
+        create("SqlDelightDatabase") {
+            packageName.set("io.github.luissimas.infrastructure.persistence")
+            dialect("app.cash.sqldelight:postgresql-dialect:${libs.versions.sqldelight.version.get()}")
+            deriveSchemaFromMigrations.set(true)
+            verifyMigrations.set(true)
+            migrationOutputDirectory.set(file("src/main/resources/db/migration"))
+            migrationOutputFileFormat = ".sql"
+        }
+    }
+}
+
+tasks.named("compileKotlin") {
+    dependsOn("generateMainSqlDelightDatabaseMigrations")
+}
+
+tasks.named("processResources") {
+    dependsOn("generateMainSqlDelightDatabaseMigrations")
 }

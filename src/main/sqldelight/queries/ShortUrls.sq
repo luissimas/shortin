@@ -1,0 +1,5 @@
+save:
+INSERT INTO short_urls VALUES (?, ?);
+
+getByShortCode:
+SELECT short_code, long_url FROM short_urls WHERE short_code = ?;

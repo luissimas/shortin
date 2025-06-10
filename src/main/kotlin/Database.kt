@@ -1,12 +1,19 @@
 package io.github.luissimas
 
+import app.cash.sqldelight.driver.jdbc.asJdbcDriver
+import com.zaxxer.hikari.HikariConfig
+import com.zaxxer.hikari.HikariDataSource
+import io.github.luissimas.infrastructure.persistence.SqlDelightDatabase
 import io.ktor.server.application.Application
-import org.jetbrains.exposed.sql.Database
 
-fun Application.configureDatabase(config: io.github.luissimas.Database): Database =
-    Database.connect(
-        url = config.url,
-        driver = "org.postgresql.Driver",
-        user = config.user,
-        password = config.password,
-    )
+fun Application.configureDatabase(config: Database): SqlDelightDatabase {
+    val dbConfig =
+        HikariConfig().apply {
+            jdbcUrl = config.url
+            username = config.user
+            password = config.password
+        }
+    return HikariDataSource(dbConfig).asJdbcDriver().let {
+        SqlDelightDatabase(it)
+    }
+}
