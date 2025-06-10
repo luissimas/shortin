@@ -12,15 +12,13 @@ import io.github.luissimas.core.shorturl.ports.ShortUrlRepository
 import kotlinx.coroutines.Dispatchers
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.Transaction
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
-import org.jetbrains.exposed.sql.transactions.transaction
 
-class PostgresShortUrlRepository(
+class ExposedShortUrlRepository(
     private val database: Database,
 ) : ShortUrlRepository {
     object ShortUrls : Table("short_urls") {
@@ -28,13 +26,6 @@ class PostgresShortUrlRepository(
         val longUrl = varchar("long_url", length = 255)
 
         override val primaryKey = PrimaryKey(shortCode)
-    }
-
-    // TODO use flyway for migrations
-    init {
-        transaction(database) {
-            SchemaUtils.create(ShortUrls)
-        }
     }
 
     private suspend fun <T> suspendTransaction(block: Transaction.() -> T) =
