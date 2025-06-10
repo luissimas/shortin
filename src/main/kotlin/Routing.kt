@@ -15,11 +15,9 @@ import io.ktor.server.plugins.requestvalidation.ValidationResult
 import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.routing
-import kotlinx.serialization.ExperimentalSerializationApi
 
 val logger = KotlinLogging.logger { }
 
-@OptIn(ExperimentalSerializationApi::class)
 fun Application.configureRouting(database: SqlDelightDatabase) {
     install(StatusPages) {
         exception<Throwable> { call, cause ->

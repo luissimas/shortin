@@ -20,11 +20,9 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.testing.testApplication
-import kotlinx.serialization.ExperimentalSerializationApi
 import org.flywaydb.core.Flyway
 import org.testcontainers.containers.PostgreSQLContainer
 
-@OptIn(ExperimentalSerializationApi::class)
 class ShortUrlRoutesTest :
     FunSpec({
         val postgresContainer =
