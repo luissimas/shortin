@@ -16,6 +16,7 @@ arrow-version = "2.1.2"
 kotest-assertions-arrow-version = "2.0.0"
 hoplite-version = "2.9.0"
 testcontainers-version = "1.19.7"
+flyway-version = "11.9.1"
 
 [libraries]
 ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor-version" }
@@ -51,6 +52,8 @@ ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negoti
 hoplite-core = { module = "com.sksamuel.hoplite:hoplite-core", version.ref = "hoplite-version" }
 testcontainers-core = { module = "org.testcontainers:testcontainers", version.ref = "testcontainers-version" }
 testcontainers-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testcontainers-version" }
+flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway-version" }
+flyway-postgres = { module = "org.flywaydb:flyway-database-postgresql", version.ref = "flyway-version" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin-version" }
@@ -58,3 +61,4 @@ ktor = { id = "io.ktor.plugin", version.ref = "ktor-version" }
 kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin-version" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint-version" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt-version"}
+flyway = { id = "org.flywaydb.flyway", version.ref = "flyway-version" }

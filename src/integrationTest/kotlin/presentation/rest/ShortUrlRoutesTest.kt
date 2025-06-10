@@ -21,6 +21,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.testing.testApplication
 import kotlinx.serialization.ExperimentalSerializationApi
+import org.flywaydb.core.Flyway
 import org.testcontainers.containers.PostgreSQLContainer
 
 @OptIn(ExperimentalSerializationApi::class)
@@ -35,6 +36,14 @@ class ShortUrlRoutesTest :
 
         beforeSpec {
             postgresContainer.start()
+            Flyway
+                .configure()
+                .dataSource(
+                    postgresContainer.jdbcUrl,
+                    postgresContainer.username,
+                    postgresContainer.password,
+                ).load()
+                .migrate()
         }
 
         afterSpec {

@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.plugin.serialization)
     alias(libs.plugins.ktlint)
     alias(libs.plugins.detekt)
+    alias(libs.plugins.flyway)
 }
 
 group = "io.github.luissimas"
@@ -41,6 +42,7 @@ dependencies {
     implementation(libs.logstash.logback.encoder)
     implementation(libs.arrow.core)
     implementation(libs.hoplite.core)
+    implementation(libs.flyway.core)
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.kotlin.test.junit)
     testImplementation(libs.kotest.runner.junit)
@@ -80,3 +82,23 @@ tasks.register<Test>("integrationTest") {
 }
 
 tasks.named("check") { dependsOn("integrationTest") }
+
+buildscript {
+    repositories { mavenCentral() }
+    dependencies {
+        classpath("org.flywaydb:flyway-database-postgresql:${libs.versions.flyway.version.get()}")
+    }
+}
+
+flyway {
+    url = System.getenv("DATABASE__URL")
+    user = System.getenv("DATABASE__USER")
+    password = System.getenv("DATABASE__PASSWORD")
+}
+
+tasks.register<JavaExec>("generateMigrationScript") {
+    group = "application"
+    description = "Generate migration script in the path exposed-migration/migrations"
+    classpath = sourceSets.main.get().runtimeClasspath
+    mainClass = "GenerateMigrationScriptKt"
+}
