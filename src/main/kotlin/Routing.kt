@@ -12,6 +12,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.plugins.statuspages.StatusPages
+import io.ktor.server.plugins.swagger.swaggerUI
 import io.ktor.server.response.respond
 import io.ktor.server.routing.routing
 
@@ -37,6 +38,7 @@ fun Application.configureRouting(database: SqlDelightDatabase) {
     val shortUrlService = ShortUrlService(shortUrlRepository, RandomShortCodeGenerator())
 
     routing {
+        swaggerUI(path = "docs", swaggerFile = "openapi/documentation.yaml")
         shortUrl(shortUrlService)
     }
 }

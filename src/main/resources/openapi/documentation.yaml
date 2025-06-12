@@ -1,0 +1,104 @@
+openapi: "3.1.0"
+info:
+  title: "shortin API"
+  description: "shortin API"
+  version: "1.0.0"
+servers:
+  - url: "http://localhost:8080"
+  - url: "https://shortin"
+paths:
+  /metrics:
+    get:
+      description: ""
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+  /r/{shortCode}:
+    get:
+      description: ""
+      parameters:
+        - name: "shortCode"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "302":
+          description: "Found redirect"
+        "400":
+          description: "Bad Request"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HttpError"
+        "404":
+          description: "Short code not found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HttpError"
+        "500":
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HttpError"
+  /urls:
+    post:
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateShortUrlRequest"
+        required: true
+      responses:
+        "201":
+          description: "Created"
+          content:
+            'application/json':
+              schema:
+                $ref: "#/components/schemas/CreateShortUrlResponse"
+        "400":
+          description: "Bad Request"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HttpError"
+        "500":
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HttpError"
+
+components:
+  schemas:
+    HttpError:
+      type: "object"
+      properties:
+        error:
+          type: "string"
+      required:
+        - "error"
+    CreateShortUrlRequest:
+      type: "object"
+      properties:
+        longUrl:
+          type: "string"
+      required:
+        - "longUrl"
+    CreateShortUrlResponse:
+      type: "object"
+      properties:
+        shortCode:
+          type: "string"
+        longUrl:
+          type: "string"
+      required:
+        - "shortCode"
+        - "longUrl"

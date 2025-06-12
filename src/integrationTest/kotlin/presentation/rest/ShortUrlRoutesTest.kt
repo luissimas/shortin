@@ -7,6 +7,7 @@ import io.github.luissimas.module
 import io.github.luissimas.presentation.rest.CreateShortUrlRequest
 import io.github.luissimas.presentation.rest.CreateShortUrlResponse
 import io.github.luissimas.presentation.rest.HttpError
+import io.kotest.assertions.ktor.client.shouldHaveHeader
 import io.kotest.assertions.ktor.client.shouldHaveStatus
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
@@ -80,12 +81,16 @@ class ShortUrlRoutesTest :
                             setBody(body)
                         }
                     createResponse shouldHaveStatus HttpStatusCode.Created
+                    createResponse.shouldHaveHeader(
+                        HttpHeaders.ContentType,
+                        "${ContentType.Application.Json}; charset=UTF-8",
+                    )
                     val responseBody = createResponse.body<CreateShortUrlResponse>()
                     responseBody.longUrl shouldBe longUrl
 
                     val redirectResponse = client.get("/r/${responseBody.shortCode}")
                     redirectResponse shouldHaveStatus HttpStatusCode.Found
-                    redirectResponse.headers["Location"] shouldBe longUrl
+                    redirectResponse.shouldHaveHeader(HttpHeaders.Location, longUrl)
                 }
             }
 
@@ -108,6 +113,10 @@ class ShortUrlRoutesTest :
                             setBody(body)
                         }
                     response shouldHaveStatus HttpStatusCode.BadRequest
+                    response.shouldHaveHeader(
+                        HttpHeaders.ContentType,
+                        "${ContentType.Application.Json}; charset=UTF-8",
+                    )
                     response.body<HttpError>() shouldBe HttpError("Invalid URL")
                 }
             }
@@ -127,6 +136,10 @@ class ShortUrlRoutesTest :
 
                     val response = client.get("/r/idontexist")
                     response shouldHaveStatus HttpStatusCode.NotFound
+                    response.shouldHaveHeader(
+                        HttpHeaders.ContentType,
+                        "${ContentType.Application.Json}; charset=UTF-8",
+                    )
                     response.body<HttpError>() shouldBe HttpError("Not found")
                 }
             }
@@ -144,6 +157,10 @@ class ShortUrlRoutesTest :
 
                     val response = client.get("/r/@#$*-")
                     response shouldHaveStatus HttpStatusCode.BadRequest
+                    response.shouldHaveHeader(
+                        HttpHeaders.ContentType,
+                        "${ContentType.Application.Json}; charset=UTF-8",
+                    )
                     response.body<HttpError>() shouldBe HttpError("Invalid short code")
                 }
             }
