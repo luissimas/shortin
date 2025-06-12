@@ -1,12 +1,12 @@
 package io.github.luissimas.presentation.rest
 
-import arrow.core.raise.either
+import dev.forkhandles.result4k.Failure
+import dev.forkhandles.result4k.onFailure
 import io.github.luissimas.core.shorturl.domain.ApplicationError
 import io.github.luissimas.core.shorturl.domain.DomainError
 import io.github.luissimas.core.shorturl.domain.ShortCode
 import io.github.luissimas.core.shorturl.domain.ShortUrl
 import io.github.luissimas.core.shorturl.domain.Url
-import io.github.luissimas.core.shorturl.domain.ValidationError
 import io.github.luissimas.core.shorturl.services.ShortUrlService
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.request.receive
@@ -36,11 +36,11 @@ data class CreateShortUrlResponse(
 
 suspend fun handleError(
     call: RoutingCall,
-    error: DomainError,
+    error: Failure<Any>,
 ) {
     val status: HttpStatusCode =
-        when (error) {
-            is ValidationError -> HttpStatusCode.BadRequest
+        when (error.reason) {
+            is DomainError -> HttpStatusCode.BadRequest
             is ApplicationError.EntityNotFound -> HttpStatusCode.NotFound
             is ApplicationError.ShortCodeAlreadyExists -> HttpStatusCode.Conflict
             else -> HttpStatusCode.InternalServerError
@@ -51,24 +51,18 @@ suspend fun handleError(
 fun Route.shortUrl(shortUrlService: ShortUrlService) =
     route("/") {
         post("/urls") {
-            either {
-                val request = call.receive<CreateShortUrlRequest>()
-                val longUrl = Url.create(request.longUrl).bind()
-                val shortUrl = shortUrlService.createShortUrl(longUrl).bind()
-                CreateShortUrlResponse.fromShortUrl(shortUrl)
-            }.fold(
-                ifLeft = { handleError(call, it) },
-                ifRight = { call.respond(HttpStatusCode.Created, it) },
-            )
+            val request = call.receive<CreateShortUrlRequest>()
+            val longUrl = Url.create(request.longUrl).onFailure { return@post handleError(call, it) }
+            val shortUrl = shortUrlService.createShortUrl(longUrl).onFailure { return@post handleError(call, it) }
+
+            call.respond(HttpStatusCode.Created, CreateShortUrlResponse.fromShortUrl(shortUrl))
         }
 
         get("/r/{shortCode}") {
-            either {
-                val shortCode = ShortCode.create(call.pathParameters["shortCode"]).bind()
-                shortUrlService.getShortUrl(shortCode).bind()
-            }.fold(
-                ifLeft = { handleError(call, it) },
-                ifRight = { call.respondRedirect(it.longUrl.url, permanent = false) },
-            )
+            val shortCodeParam = call.pathParameters["shortCode"]
+            val shortCode = ShortCode.create(shortCodeParam).onFailure { return@get handleError(call, it) }
+            val shortUrl = shortUrlService.getShortUrl(shortCode).onFailure { return@get handleError(call, it) }
+
+            call.respondRedirect(shortUrl.longUrl.url, permanent = false)
         }
     }

@@ -1,8 +1,10 @@
 package io.github.luissimas.core.shorturl.domain
 
-import arrow.core.Either
-import arrow.core.left
-import arrow.core.right
+import dev.forkhandles.result4k.Result
+import dev.forkhandles.result4k.map
+import dev.forkhandles.result4k.mapFailure
+import dev.forkhandles.result4k.resultFrom
+import io.github.luissimas.core.shorturl.domain.DomainError.InvalidUrl
 import java.net.URL
 
 /**
@@ -16,10 +18,9 @@ value class Url private constructor(
         /**
          * Constructs a new valid [Url].
          */
-        fun create(value: String?): Either<ValidationError, Url> =
-            runCatching { URL(value) }.fold(
-                { Url(it.toString()).right() },
-                { ValidationError.InvalidUrl.left() },
-            )
+        fun create(value: String?): Result<Url, InvalidUrl> =
+            resultFrom { URL(value) }
+                .map { Url(it.toString()) }
+                .mapFailure { InvalidUrl }
     }
 }

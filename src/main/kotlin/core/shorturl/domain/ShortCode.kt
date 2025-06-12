@@ -1,9 +1,9 @@
 package io.github.luissimas.core.shorturl.domain
 
-import arrow.core.Either
-import arrow.core.raise.either
-import arrow.core.raise.ensure
-import arrow.core.raise.ensureNotNull
+import dev.forkhandles.result4k.Failure
+import dev.forkhandles.result4k.Result
+import dev.forkhandles.result4k.Success
+import io.github.luissimas.core.shorturl.domain.DomainError.InvalidShortCode
 
 /**
  * A valid domain short code.
@@ -18,11 +18,11 @@ value class ShortCode private constructor(
         /**
          * Constructs a new valid [ShortCode].
          */
-        fun create(value: String?): Either<ValidationError, ShortCode> =
-            either {
-                ensureNotNull(value) { ValidationError.MissingValue }
-                ensure(value.all { VALID_CHARS.contains(it) }) { ValidationError.InvalidShortCode }
-                ShortCode(value)
+        fun create(value: String?): Result<ShortCode, InvalidShortCode> =
+            when {
+                value.isNullOrBlank() -> Failure(InvalidShortCode)
+                value.any { it !in VALID_CHARS } -> Failure(InvalidShortCode)
+                else -> Success(ShortCode(value))
             }
     }
 }

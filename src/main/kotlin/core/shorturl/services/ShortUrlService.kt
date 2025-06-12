@@ -1,10 +1,10 @@
 package io.github.luissimas.core.shorturl.services
 
-import arrow.core.Either
-import arrow.core.raise.either
-import arrow.core.right
-import io.github.luissimas.core.shorturl.domain.ApplicationError
-import io.github.luissimas.core.shorturl.domain.DomainError
+import dev.forkhandles.result4k.Failure
+import dev.forkhandles.result4k.Result
+import dev.forkhandles.result4k.Success
+import io.github.luissimas.core.shorturl.domain.ApplicationError.CouldNotAllocateShortCode
+import io.github.luissimas.core.shorturl.domain.ApplicationError.EntityNotFound
 import io.github.luissimas.core.shorturl.domain.ShortCode
 import io.github.luissimas.core.shorturl.domain.ShortUrl
 import io.github.luissimas.core.shorturl.domain.Url
@@ -19,26 +19,25 @@ class ShortUrlService(
     private val shortCodeGenerator: ShortCodeGenerator,
     private val maxAttempts: Int = 5,
 ) {
-    suspend fun createShortUrl(longUrl: Url): Either<DomainError, ShortUrl> =
-        either {
-            repeat(maxAttempts) {
-                val shortCode = shortCodeGenerator.generate().bind()
-                val shortUrl = ShortUrl(shortCode = shortCode, longUrl = longUrl)
+    suspend fun createShortUrl(longUrl: Url): Result<ShortUrl, CouldNotAllocateShortCode> {
+        repeat(maxAttempts) {
+            val shortCode = shortCodeGenerator.generate()
+            val shortUrl = ShortUrl(shortCode = shortCode, longUrl = longUrl)
 
-                when (val saveResult = repository.save(shortUrl)) {
-                    is Either.Right -> return shortUrl.right()
-                    is Either.Left -> {
-                        if (saveResult.value != ApplicationError.ShortCodeAlreadyExists) return saveResult
-                        logger.atWarn {
-                            message = "Generated short code already exists"
-                            payload = mapOf("attempt" to it, "maxAttempts" to maxAttempts, "shortCode" to shortCode)
-                        }
+            when (val saveResult = repository.save(shortUrl)) {
+                is Success -> return saveResult
+                is Failure -> {
+                    logger.atWarn {
+                        message = "Generated short code already exists"
+                        payload = mapOf("attempt" to it, "maxAttempts" to maxAttempts, "shortCode" to shortCode)
                     }
                 }
             }
-
-            raise(ApplicationError.MaxAttemptsReached)
         }
 
-    suspend fun getShortUrl(shortCode: ShortCode): Either<DomainError, ShortUrl> = repository.getByShortCode(shortCode)
+        return Failure(CouldNotAllocateShortCode)
+    }
+
+    suspend fun getShortUrl(shortCode: ShortCode): Result<ShortUrl, EntityNotFound> =
+        repository.getByShortCode(shortCode)
 }

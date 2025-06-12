@@ -1,19 +1,15 @@
 package io.github.luissimas.core.shorturl.domain
 
-sealed interface DomainError
+sealed interface DomainError {
+    object InvalidShortCode : DomainError
 
-sealed class ValidationError : DomainError {
-    object MissingValue : ValidationError()
-
-    object InvalidShortCode : ValidationError()
-
-    object InvalidUrl : ValidationError()
+    object InvalidUrl : DomainError
 }
 
-sealed class ApplicationError : DomainError {
-    object EntityNotFound : ApplicationError()
+sealed interface ApplicationError {
+    object EntityNotFound : ApplicationError
 
-    object MaxAttemptsReached : ApplicationError()
+    object CouldNotAllocateShortCode : ApplicationError
 
-    object ShortCodeAlreadyExists : ApplicationError()
+    object ShortCodeAlreadyExists : ApplicationError
 }
