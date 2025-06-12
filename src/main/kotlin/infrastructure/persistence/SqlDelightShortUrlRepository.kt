@@ -1,10 +1,13 @@
 package io.github.luissimas.infrastructure.persistence
 
-import arrow.core.Either
-import arrow.core.left
-import arrow.core.raise.either
-import io.github.luissimas.core.shorturl.domain.ApplicationError
-import io.github.luissimas.core.shorturl.domain.DomainError
+import dev.forkhandles.result4k.Result
+import dev.forkhandles.result4k.asResultOr
+import dev.forkhandles.result4k.map
+import dev.forkhandles.result4k.mapFailure
+import dev.forkhandles.result4k.onFailure
+import dev.forkhandles.result4k.resultFrom
+import io.github.luissimas.core.shorturl.domain.ApplicationError.EntityNotFound
+import io.github.luissimas.core.shorturl.domain.ApplicationError.ShortCodeAlreadyExists
 import io.github.luissimas.core.shorturl.domain.ShortCode
 import io.github.luissimas.core.shorturl.domain.ShortUrl
 import io.github.luissimas.core.shorturl.domain.Url
@@ -19,33 +22,44 @@ class SqlDelightShortUrlRepository(
 ) : ShortUrlRepository {
     private val queries = database.shortUrlsQueries
 
-    override suspend fun getByShortCode(shortCode: ShortCode): Either<DomainError, ShortUrl> =
+    override suspend fun getByShortCode(shortCode: ShortCode): Result<ShortUrl, EntityNotFound> =
         withContext(Dispatchers.IO) {
-            queries.getByShortCode(shortCode.code).executeAsOneOrNull().let {
-                it?.toEntity() ?: ApplicationError.EntityNotFound.left()
-            }
+            queries
+                .getByShortCode(
+                    shortCode.code,
+                ).executeAsOneOrNull()
+                .asResultOr { EntityNotFound }
+                .map { it.toEntity() }
         }
 
-    override suspend fun save(url: ShortUrl): Either<DomainError, Unit> =
+    override suspend fun save(shortUrl: ShortUrl): Result<ShortUrl, ShortCodeAlreadyExists> =
         withContext(Dispatchers.IO) {
-            Either
-                .catchOrThrow<PSQLException, Unit> {
-                    queries.save(url.shortCode.code, url.longUrl.url)
-                }.mapLeft {
-                    val isUniqueConstraintError = it.sqlState == "23505"
-                    if (isUniqueConstraintError) {
-                        ApplicationError.ShortCodeAlreadyExists
-                    } else {
-                        throw it
+            resultFrom { queries.save(shortUrl.shortCode.code, shortUrl.longUrl.url) }
+                .map { shortUrl }
+                .mapFailure { exception ->
+                    when (exception) {
+                        is PSQLException -> {
+                            if (exception.sqlState == "23505") {
+                                ShortCodeAlreadyExists
+                            } else {
+                                throw exception
+                            }
+                        }
+                        else -> throw exception
                     }
                 }
         }
 }
 
-fun Short_urls.toEntity() =
-    either {
-        val shortCode = ShortCode.create(short_code).bind()
-        val longUrl = Url.create(long_url).bind()
+fun Short_urls.toEntity(): ShortUrl {
+    val shortCode =
+        ShortCode.create(short_code).onFailure {
+            error("Retrieved invalid short code from database: '$short_code'")
+        }
+    val longUrl =
+        Url.create(long_url).onFailure {
+            error("Retrieved invalid long URL from database: '$long_url'")
+        }
 
-        ShortUrl(shortCode, longUrl)
-    }
+    return ShortUrl(shortCode, longUrl)
+}

@@ -12,13 +12,12 @@ kotlin-logging-version = "7.0.3"
 logstash-logback-encoder-version = "8.1"
 ktlint-version = "12.3.0"
 detekt-version = "1.23.8"
-arrow-version = "2.1.2"
-kotest-assertions-arrow-version = "2.0.0"
 hoplite-version = "2.9.0"
 testcontainers-version = "1.19.7"
 flyway-version = "11.9.1"
 sqldelight-version = "2.1.0"
 hikari-version = "6.3.0"
+result4k-version = "2.22.3.0"
 
 [libraries]
 ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor-version" }
@@ -48,8 +47,6 @@ kotest-property = { module = "io.kotest:kotest-property", version.ref = "kotest-
 kotest-assertions-ktor = { module = "io.kotest.extensions:kotest-assertions-ktor", version.ref = "kotest-assertions-ktor-version" }
 kotlin-logging = { module = "io.github.oshai:kotlin-logging-jvm", version.ref = "kotlin-logging-version" }
 logstash-logback-encoder = { module = "net.logstash.logback:logstash-logback-encoder", version.ref = "logstash-logback-encoder-version" }
-arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow-version" }
-kotest-assertions-arrow = { module = "io.kotest.extensions:kotest-assertions-arrow", version.ref = "kotest-assertions-arrow-version" }
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor-version" }
 hoplite-core = { module = "com.sksamuel.hoplite:hoplite-core", version.ref = "hoplite-version" }
 testcontainers-core = { module = "org.testcontainers:testcontainers", version.ref = "testcontainers-version" }
@@ -59,6 +56,8 @@ flyway-postgres = { module = "org.flywaydb:flyway-database-postgresql", version.
 sqldelight-jdbc = { module = "app.cash.sqldelight:jdbc-driver", version.ref = "sqldelight-version" }
 sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight-version" }
 hikari = { module = "com.zaxxer:HikariCP", version.ref = "hikari-version" }
+result4k = { module = "dev.forkhandles:result4k", version.ref = "result4k-version" }
+result4k-kotest = { module = "dev.forkhandles:result4k-kotest", version.ref = "result4k-version" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin-version" }

@@ -1,10 +1,11 @@
 package io.github.luissimas.infrastructure.persistence
 
-import arrow.core.Either
-import arrow.core.left
-import arrow.core.right
-import io.github.luissimas.core.shorturl.domain.ApplicationError
-import io.github.luissimas.core.shorturl.domain.DomainError
+import dev.forkhandles.result4k.Failure
+import dev.forkhandles.result4k.Result
+import dev.forkhandles.result4k.Success
+import dev.forkhandles.result4k.asResultOr
+import io.github.luissimas.core.shorturl.domain.ApplicationError.EntityNotFound
+import io.github.luissimas.core.shorturl.domain.ApplicationError.ShortCodeAlreadyExists
 import io.github.luissimas.core.shorturl.domain.ShortCode
 import io.github.luissimas.core.shorturl.domain.ShortUrl
 import io.github.luissimas.core.shorturl.ports.ShortUrlRepository
@@ -12,16 +13,15 @@ import io.github.luissimas.core.shorturl.ports.ShortUrlRepository
 class InMemoryShortUrlRepository : ShortUrlRepository {
     private val urls: HashMap<ShortCode, ShortUrl> = hashMapOf()
 
-    override suspend fun save(url: ShortUrl): Either<DomainError, Unit> {
-        val existingUrl = urls[url.shortCode]
-        if (existingUrl != null) {
-            return ApplicationError.ShortCodeAlreadyExists.left()
+    override suspend fun save(shortUrl: ShortUrl): Result<ShortUrl, ShortCodeAlreadyExists> =
+        when (urls[shortUrl.shortCode]) {
+            null -> {
+                urls[shortUrl.shortCode] = shortUrl
+                Success(shortUrl)
+            }
+            else -> Failure(ShortCodeAlreadyExists)
         }
 
-        urls[url.shortCode] = url
-        return Unit.right()
-    }
-
-    override suspend fun getByShortCode(shortCode: ShortCode): Either<DomainError, ShortUrl> =
-        urls.get(shortCode)?.right() ?: ApplicationError.EntityNotFound.left()
+    override suspend fun getByShortCode(shortCode: ShortCode): Result<ShortUrl, EntityNotFound> =
+        urls.get(shortCode).asResultOr { EntityNotFound }
 }

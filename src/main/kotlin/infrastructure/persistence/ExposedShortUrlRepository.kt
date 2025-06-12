@@ -1,10 +1,14 @@
 package io.github.luissimas.infrastructure.persistence
 
-import arrow.core.Either
-import arrow.core.left
-import arrow.core.raise.either
-import io.github.luissimas.core.shorturl.domain.ApplicationError
-import io.github.luissimas.core.shorturl.domain.DomainError
+import dev.forkhandles.result4k.Failure
+import dev.forkhandles.result4k.Result
+import dev.forkhandles.result4k.Success
+import dev.forkhandles.result4k.map
+import dev.forkhandles.result4k.mapFailure
+import dev.forkhandles.result4k.onFailure
+import dev.forkhandles.result4k.resultFrom
+import io.github.luissimas.core.shorturl.domain.ApplicationError.EntityNotFound
+import io.github.luissimas.core.shorturl.domain.ApplicationError.ShortCodeAlreadyExists
 import io.github.luissimas.core.shorturl.domain.ShortCode
 import io.github.luissimas.core.shorturl.domain.ShortUrl
 import io.github.luissimas.core.shorturl.domain.Url
@@ -31,25 +35,29 @@ class ExposedShortUrlRepository(
     private suspend fun <T> suspendTransaction(block: Transaction.() -> T) =
         newSuspendedTransaction(context = Dispatchers.IO, db = database, statement = block)
 
-    override suspend fun save(url: ShortUrl): Either<DomainError, Unit> =
+    override suspend fun save(shortUrl: ShortUrl): Result<ShortUrl, ShortCodeAlreadyExists> =
         suspendTransaction {
-            Either
-                .catchOrThrow<ExposedSQLException, Unit> {
-                    ShortUrls.insert {
-                        it[shortCode] = url.shortCode.code
-                        it[longUrl] = url.longUrl.url
-                    }
-                }.mapLeft {
-                    val isUniqueConstraintError = it.sqlState == "23505"
-                    if (isUniqueConstraintError) {
-                        ApplicationError.ShortCodeAlreadyExists
-                    } else {
-                        throw it
+            resultFrom {
+                ShortUrls.insert {
+                    it[shortCode] = shortUrl.shortCode.code
+                    it[longUrl] = shortUrl.longUrl.url
+                }
+            }.map { shortUrl }
+                .mapFailure { exception ->
+                    when (exception) {
+                        is ExposedSQLException -> {
+                            if (exception.sqlState == "23505") {
+                                ShortCodeAlreadyExists
+                            } else {
+                                throw exception
+                            }
+                        }
+                        else -> throw exception
                     }
                 }
         }
 
-    override suspend fun getByShortCode(shortCode: ShortCode): Either<DomainError, ShortUrl> =
+    override suspend fun getByShortCode(shortCode: ShortCode): Result<ShortUrl, EntityNotFound> =
         suspendTransaction {
             ShortUrls
                 .select(
@@ -57,12 +65,20 @@ class ExposedShortUrlRepository(
                     ShortUrls.longUrl,
                 ).where(ShortUrls.shortCode eq shortCode.code)
                 .map {
-                    either {
-                        val shortCode = ShortCode.create(it[ShortUrls.shortCode]).bind()
-                        val longUrl = Url.create(it[ShortUrls.longUrl]).bind()
+                    val storedShortCode = it[ShortUrls.shortCode]
+                    val shortCode =
+                        ShortCode.create(storedShortCode).onFailure {
+                            error(
+                                "Retrieved invalid short code from database: '$storedShortCode'",
+                            )
+                        }
+                    val storedLongUrl = it[ShortUrls.longUrl]
+                    val longUrl =
+                        Url.create(storedLongUrl).onFailure {
+                            error("Retrieved invalid long URL from database: '$storedLongUrl'")
+                        }
 
-                        ShortUrl(shortCode = shortCode, longUrl = longUrl)
-                    }
-                }.singleOrNull() ?: ApplicationError.EntityNotFound.left()
+                    Success(ShortUrl(shortCode = shortCode, longUrl = longUrl))
+                }.singleOrNull() ?: Failure(EntityNotFound)
         }
 }
