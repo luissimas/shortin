@@ -18,7 +18,6 @@ fun Application.configureMonitoring() {
 
     install(MicrometerMetrics) {
         registry = appMicrometerRegistry
-        // ...
     }
     install(CallId) {
         header(HttpHeaders.XRequestId)

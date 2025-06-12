@@ -2,7 +2,9 @@ package presentation.rest
 
 import io.github.luissimas.Config
 import io.github.luissimas.Database
+import io.github.luissimas.Kafka
 import io.github.luissimas.Server
+import io.github.luissimas.infrastructure.messaging.KafkaTopic
 import io.github.luissimas.module
 import io.github.luissimas.presentation.rest.CreateShortUrlRequest
 import io.github.luissimas.presentation.rest.CreateShortUrlResponse
@@ -23,6 +25,8 @@ import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.testing.testApplication
 import org.flywaydb.core.Flyway
 import org.testcontainers.containers.PostgreSQLContainer
+import org.testcontainers.kafka.KafkaContainer
+import org.testcontainers.utility.DockerImageName
 
 class ShortUrlRoutesTest :
     DescribeSpec({
@@ -32,6 +36,7 @@ class ShortUrlRoutesTest :
                 withUsername("postgres")
                 withPassword("postgres")
             }
+        val kafkaContainer = KafkaContainer(DockerImageName.parse("apache/kafka:4.0.0"))
 
         fun config() =
             Config(
@@ -42,10 +47,16 @@ class ShortUrlRoutesTest :
                         password = postgresContainer.password,
                     ),
                 server = Server(host = "localhost", port = 8080),
+                kafka =
+                    Kafka(
+                        bootstrapServers = kafkaContainer.bootstrapServers,
+                        topic = KafkaTopic("shortin-test-topic"),
+                    ),
             )
 
         beforeSpec {
             postgresContainer.start()
+            kafkaContainer.start()
             Flyway
                 .configure()
                 .dataSource(
