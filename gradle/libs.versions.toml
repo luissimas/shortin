@@ -13,10 +13,11 @@ logstash-logback-encoder-version = "8.1"
 ktlint-version = "12.3.0"
 detekt-version = "1.23.8"
 hoplite-version = "2.9.0"
-testcontainers-version = "1.19.7"
+testcontainers-version = "1.21.1"
 flyway-version = "11.9.1"
 sqldelight-version = "2.1.0"
 hikari-version = "6.3.0"
+kotlin-kafka-version = "0.4.1"
 result4k-version = "2.22.3.0"
 
 [libraries]
@@ -51,11 +52,13 @@ ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negoti
 hoplite-core = { module = "com.sksamuel.hoplite:hoplite-core", version.ref = "hoplite-version" }
 testcontainers-core = { module = "org.testcontainers:testcontainers", version.ref = "testcontainers-version" }
 testcontainers-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testcontainers-version" }
+testcontainers-kafka = { module = "org.testcontainers:kafka", version.ref = "testcontainers-version" }
 flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway-version" }
 flyway-postgres = { module = "org.flywaydb:flyway-database-postgresql", version.ref = "flyway-version" }
 sqldelight-jdbc = { module = "app.cash.sqldelight:jdbc-driver", version.ref = "sqldelight-version" }
 sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight-version" }
 hikari = { module = "com.zaxxer:HikariCP", version.ref = "hikari-version" }
+kotlin-kafka = { module = "io.github.nomisrev:kotlin-kafka", version.ref = "kotlin-kafka-version" }
 result4k = { module = "dev.forkhandles:result4k", version.ref = "result4k-version" }
 result4k-kotest = { module = "dev.forkhandles:result4k-kotest", version.ref = "result4k-version" }
 
