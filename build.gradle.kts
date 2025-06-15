@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.detekt)
     alias(libs.plugins.flyway)
     alias(libs.plugins.sqldelight)
+    alias(libs.plugins.jib)
 }
 
 group = "io.github.luissimas"

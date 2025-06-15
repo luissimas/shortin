@@ -70,3 +70,4 @@ ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint-version" 
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt-version"}
 flyway = { id = "org.flywaydb.flyway", version.ref = "flyway-version" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight-version" }
+jib = { id = "com.google.cloud.tools.jib", version = "3.4.5" }
