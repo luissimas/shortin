@@ -63,8 +63,4 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build Docker Image
-        run: |
-          ./gradlew --no-daemon jib \
-          -Djib.to.image=${{ env.REGISTRY }}/${{ github.repository }}:${{ github.sha }} \
-          -Djib.to.auth.username=${{ github.actor }} \
-          -Djib.to.auth.password=${{ secrets.GITHUB_TOKEN }}
+        run: ./gradlew --no-daemon jib --image=${{ env.REGISTRY }}/${{ github.repository }}:${{ github.sha }}
